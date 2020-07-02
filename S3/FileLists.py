@@ -427,10 +427,13 @@ def fetch_remote_list(args, require_attribs = False, recursive = None, uri_param
                 # Objects may exist on S3 with empty names (''), which don't map so well to common filesystems.
                 warning(u"Empty object name on S3 found, ignoring.")
                 continue
+            md5_sum = ''
+            if 'ETag' in object.keys():
+                md5_sum = object['ETag'].strip('"\'')
             rem_list[key] = {
                 'size' : int(object['Size']),
                 'timestamp' : dateS3toUnix(object['LastModified']), ## Sadly it's upload time, not our lastmod time :-(
-                'md5' : object['ETag'].strip('"\''),
+                'md5' : md5_sum,
                 'object_key' : object['Key'],
                 'object_uri_str' : object_uri_str,
                 'base_uri' : remote_uri,
